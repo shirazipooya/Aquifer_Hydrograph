@@ -1,0 +1,109 @@
+:root{
+    --main-radius: 5px;
+    --main-padding: 5px;
+}
+
+.mainLayoutTabs{
+    background: #a9a9a9;
+    margin: 0;
+    padding-left: 2px;
+}
+
+.tabClassName{
+    width: 15%;
+    text-align: center;
+    margin: 2px;
+    background-color: #f8f9fa;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.labelClassName{
+    font-weight: bold;
+    font-size: 16px;
+    font-family: "B Koodak";
+}
+
+.headerText{
+    width: 100%;
+    font-family: "B Koodak";
+    font-weight: bold;
+    font-size: 20px;
+    color: #191970;
+    text-align: center;
+    padding-top: 10px;
+}
+
+.formgroupSidebar{
+    padding-right: 15px;
+    direction: rtl;
+    font-family: "B Koodak";
+    font-size: 18px;
+    color: #000000;
+    text-align: right;
+}
+
+.formgroupSidebar .uploadButton{
+    padding-right: 15px;
+    font-size: 14px;
+
+}
+
+.formgroupSidebar .uploadButtonInfo{
+    font-size: 14px;
+    padding-right: 10px;
+}
+
+.containerTab1{
+    display: grid;
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    grid-template-columns: 300px 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+            "sidebarTab1 content1Tab1 content2Tab1"
+            "sidebarTab1 content3Tab1 content3Tab1";
+    grid-gap: 0.2rem;
+    font-family: sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 12px;
+    /*color: #004d40;*/
+    text-align: center;
+}
+
+.sidebarTab1{
+    grid-area: sidebarTab1;
+    background: #f8f9fa;
+    border-radius: var(--main-radius);
+    padding-top: var(--main-padding);
+}
+
+.content1Tab1{
+    grid-area: content1Tab1;
+    /*background: #00c800;*/
+    border-radius: var(--main-radius);
+    padding: var(--main-padding);
+}
+
+.content2Tab1{
+    grid-area: content2Tab1;
+    /*background: #aa1777;*/
+    border-radius: var(--main-radius);
+    padding: var(--main-padding);
+}
+
+.content3Tab1{
+    grid-area: content3Tab1;
+    /*background: #000fff;*/
+    border-radius: var(--main-radius);
+    padding-top: var(--main-padding);
+}
+
+.mapTab1{
+    width: 100%;
+    height: 100%;
+    border-radius: var(--main-radius)
+}

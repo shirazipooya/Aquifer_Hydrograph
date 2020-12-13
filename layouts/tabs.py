@@ -1,36 +1,25 @@
 import dash_html_components as html
-
-# sidebar_tab1 =
-#
-#
-# body_tab1 =
-#
-#
-# main_tab1 =
-
+from layouts.sidebars import *
+from layouts.visualization import *
 
 tab1 = html.Div(
     className='containerTab1',
     children=[
-        html.Main(
-            className='mainTb1',
-            children=[]
-        ),
         html.Div(
             className='sidebarTab1',
-            children=[]
+            children=sidebarTab1
         ),
         html.Div(
-            className='content1',
-            children=[]
+            className='content1Tab1',
+            children=content1Tab1
         ),
         html.Div(
-            className='content2',
-            children=[]
+            className='content2Tab1',
+            children=content2Tab1
         ),
         html.Div(
-            className='content3',
-            children=[]
-        )
+            className='content3Tab1',
+            children=content3Tab1
+        ),
     ]
 )
