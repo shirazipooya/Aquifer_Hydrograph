@@ -8,6 +8,7 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
+import plotly.express as px
 
 No_Matching_Data_Found_Fig = {
     "layout": {
@@ -58,7 +59,15 @@ def update_content1Tab1(contents, filename):
     if contents is None:
         return No_Matching_Data_Found_Fig
     data = parse_contents(contents, filename)
-    fig = go.Figure(
+    mah_code = list(data['کد محدوده مطالعاتی'].unique())
+    geodf, j_file = read_shapfile_AreaStudy(mah_code=mah_code)
+
+    fig = px.choropleth_mapbox(data_frame=geodf,
+                               geojson=j_file,
+                               locations='Mah_code',
+                               opacity=0.4)
+
+    fig.add_trace(
         go.Scattermapbox(
             lat=data.Y_Decimal,
             lon=data.X_Decimal,
@@ -67,14 +76,17 @@ def update_content1Tab1(contents, filename):
             text=data['نام چاه']
         )
     )
+
     fig.update_layout(
         mapbox = {'style': "stamen-terrain",
                   'center': {'lon': data.X_Decimal[30],
                              'lat': data.Y_Decimal[30] },
-                  'zoom': 8},
+                  'zoom': 7},
         showlegend = False,
         hovermode='closest',
-        margin = {'l':0, 'r':0, 'b':0, 't':0})
+        margin = {'l':0, 'r':0, 'b':0, 't':0}
+    )
+
     return fig
 
 
@@ -86,6 +98,7 @@ def update_content1Tab1(contents, filename):
 def update_content2Tab1(contents, filename):
     if contents is None:
         return No_Matching_Data_Found_Fig
+
     return No_Matching_Data_Found_Fig
 
 

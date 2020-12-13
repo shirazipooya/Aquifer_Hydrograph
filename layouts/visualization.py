@@ -47,3 +47,28 @@ content3Tab1 = dash_table.DataTable(
     },
     page_size=10
 )
+
+
+# Tab 2 - Sidebar - Map
+mapSidebarTab2 = [
+    dcc.Graph(
+        id='mapSidebarTab2',
+        className='mapSidebarTab2'
+    )
+]
+
+# Tab 2 - Content 1 - Fig
+content1Tab2 = [
+    dcc.Graph(
+        id='content1Tab2',
+        className='figTab2'
+    )
+]
+
+# Tab 2 - Content 2 - Card
+content2Tab2 = [
+    html.Div(
+        id='content2Tab2',
+        className='cardTab2'
+    )
+]

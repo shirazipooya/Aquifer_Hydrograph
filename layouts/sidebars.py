@@ -2,6 +2,8 @@ import dash_html_components as html
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 
+from layouts.visualization import *
+
 sidebarTab1 = [
     html.H3(
         className='headerText',
@@ -64,6 +66,56 @@ sidebarTab1 = [
                     )
                 ]
             )
+        ]
+    )
+]
+
+sidebarTab2 = [
+    html.H3(
+        className='headerText',
+        children=['اطلاعات ورودی']
+    ),
+    html.Hr(),
+    dbc.Form(
+        className='formSidebar',
+        children=[
+            dbc.FormGroup(
+                className='formgroupSidebar',
+                children=[
+                    dbc.Label(
+                        children=[
+                            'انتخاب آبخوان:'
+                        ]
+                    ),
+                    dcc.Dropdown(
+                        id='aquifer_select_sidebar_tab2',
+                        placeholder="یک آبخوان انتخاب کنید",
+                        className='dropdown'
+                    ),
+                ]
+            ),
+            html.Br(),
+            dbc.FormGroup(
+                className='formgroupSidebar',
+                children=[
+                    dbc.Label(
+                        children=[
+                            'انتخاب چاه مشاهده ای:'
+                        ]
+                    ),
+                    dcc.Dropdown(
+                        id='well_select_sidebar_tab2',
+                        placeholder="یک یا چند چاه مشاهده ای را انتخاب کنید",
+                        multi=True,
+                        className='dropdown'
+                    ),
+                ]
+            ),
+            html.Br(),
+            dbc.FormGroup(
+                className='formgroupSidebar',
+                children=mapSidebarTab2
+            ),
         ]
     )
 ]

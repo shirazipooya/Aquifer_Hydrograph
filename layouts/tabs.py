@@ -23,3 +23,21 @@ tab1 = html.Div(
         ),
     ]
 )
+
+tab2 = html.Div(
+    className='containerTab2',
+    children=[
+        html.Div(
+            className='sidebarTab2',
+            children=sidebarTab2
+        ),
+        html.Div(
+            className='content1Tab2',
+            children=content1Tab2
+        ),
+        html.Div(
+            className='content2Tab2',
+            children=content2Tab2
+        )
+    ]
+)
