@@ -64,11 +64,3 @@ content1Tab2 = [
         className='figTab2'
     )
 ]
-
-# Tab 2 - Content 2 - Card
-content2Tab2 = [
-    html.Div(
-        id='content2Tab2',
-        className='cardTab2'
-    )
-]

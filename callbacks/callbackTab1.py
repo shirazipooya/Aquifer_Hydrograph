@@ -27,61 +27,74 @@ No_Matching_Data_Found_Fig = {
 }
 
 
-# Update Upload Button Info - Well Info
-@app.callback(Output('uploadButtonInfo_wellInfo', 'children'),
-              Output('uploadButtonInfo_wellInfo', 'color'),
-              Input('uploadButton_wellInfo', 'contents'),
-              State('uploadButton_wellInfo', 'filename'))
-def uploadButtonInfo_wellInfo_update(contents, filename):
+
+# Update Upload Button Input Data
+@app.callback(Output('uploadButtonInfo_rawData', 'children'),
+              Output('uploadButtonInfo_rawData', 'color'),
+              Input('uploadButton_rawData', 'contents'),
+              State('uploadButton_rawData', 'filename'))
+def uploadButtonInfo_rawData_update(contents, filename):
     if contents is None:
         return "فایلی انتخاب نشده است!", 'danger'
     return filename, 'success'
 
 
-
-# Update Upload Button Info - Data
-@app.callback(Output('uploadButtonInfo_data', 'children'),
-              Output('uploadButtonInfo_data', 'color'),
-              Input('uploadButton_data', 'contents'),
-              State('uploadButton_data', 'filename'))
-def uploadButtonInfo_data_update(contents, filename):
+# Data Generator
+@app.callback(Output('infoData', 'children'),
+              Output('rawData', 'children'),
+              Input('uploadButton_rawData', 'contents'),
+              State('uploadButton_rawData', 'filename'))
+def data_generator(contents, filename):
     if contents is None:
-        return "فایلی انتخاب نشده است!", 'danger'
-    return filename, 'success '
+        return 'No Data', 'No Data'
+
+    # raw_data - Dictionary Format
+    raw_data = read_excel_data(contents, filename)
+
+    data = data_cleansing(
+        well_info_data=raw_data['Info'],
+        dtw_data=raw_data['Depth_To_Water'],
+        thiessen_data=raw_data['Thiessen'],
+        sc_data=raw_data['Storage_Coefficient']
+    )
+
+    return raw_data['Info'].to_json(date_format='iso', orient='split'), data.to_json(date_format='iso', orient='split')
 
 
 
 # Update Content 1 - Map
 @app.callback(Output('content1Tab1', 'figure'),
-              Input('uploadButton_wellInfo', 'contents'),
-              State('uploadButton_wellInfo', 'filename'))
-def update_content1Tab1(contents, filename):
-    if contents is None:
+              Input('infoData', 'children'))
+def update_content1Tab1(infoData):
+    if infoData is None or infoData == 'No Data':
         return No_Matching_Data_Found_Fig
-    data = parse_contents(contents, filename)
+    data = pd.read_json(infoData, orient='split')
     mah_code = list(data['کد محدوده مطالعاتی'].unique())
     geodf, j_file = read_shapfile_AreaStudy(mah_code=mah_code)
 
     fig = px.choropleth_mapbox(data_frame=geodf,
                                geojson=j_file,
                                locations='Mah_code',
-                               opacity=0.4)
+                               opacity=0.3)
 
-    fig.add_trace(
-        go.Scattermapbox(
-            lat=data.Y_Decimal,
-            lon=data.X_Decimal,
-            mode='markers',
-            marker=go.scattermapbox.Marker(size=9),
-            text=data['نام چاه']
+    for mc in mah_code:
+        df = data[data['کد محدوده مطالعاتی'] == mc]
+
+        fig.add_trace(
+            go.Scattermapbox(
+                lat=df.Y_Decimal,
+                lon=df.X_Decimal,
+                mode='markers',
+                marker=go.scattermapbox.Marker(size=9),
+                text=df['نام چاه']
+            )
         )
-    )
 
     fig.update_layout(
         mapbox = {'style': "stamen-terrain",
-                  'center': {'lon': data.X_Decimal[30],
-                             'lat': data.Y_Decimal[30] },
-                  'zoom': 7},
+                  'center': {'lon': data.X_Decimal.mean(),
+                             'lat': data.Y_Decimal.mean() },
+                  'zoom': 5.5},
         showlegend = False,
         hovermode='closest',
         margin = {'l':0, 'r':0, 'b':0, 't':0}
@@ -93,10 +106,9 @@ def update_content1Tab1(contents, filename):
 
 # Update Content 2 - Map
 @app.callback(Output('content2Tab1', 'figure'),
-              Input('uploadButton_wellInfo', 'contents'),
-              State('uploadButton_wellInfo', 'filename'))
-def update_content2Tab1(contents, filename):
-    if contents is None:
+              Input('infoData', 'children'))
+def update_content2Tab1(infoData):
+    if infoData == 'No Data':
         return No_Matching_Data_Found_Fig
 
     return No_Matching_Data_Found_Fig
@@ -106,10 +118,9 @@ def update_content2Tab1(contents, filename):
 # Update Content 2 - Table
 @app.callback(Output('content3Tab1', 'data'),
               Output('content3Tab1', 'columns'),
-              Input('uploadButton_wellInfo', 'contents'),
-              State('uploadButton_wellInfo', 'filename'))
-def update_content3Tab1(contents, filename):
-    if contents is None:
+              Input('infoData', 'children'))
+def update_content3Tab1(infoData):
+    if infoData is None or infoData == 'No Data':
         return [{}], []
-    data = parse_contents(contents, filename)
+    data = pd.read_json(infoData, orient='split')
     return data.to_dict('records'), [{"name": i, "id": i} for i in data.columns]

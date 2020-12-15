@@ -34,10 +34,6 @@ tab2 = html.Div(
         html.Div(
             className='content1Tab2',
             children=content1Tab2
-        ),
-        html.Div(
-            className='content2Tab2',
-            children=content2Tab2
         )
     ]
 )

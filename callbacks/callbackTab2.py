@@ -6,9 +6,11 @@ import pandas as pd
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
+import dash_daq as daq
 from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
 import plotly.express as px
+from plotly.subplots import make_subplots
 
 No_Matching_Data_Found_Fig = {
     "layout": {
@@ -40,7 +42,7 @@ base_map.update_layout(
     mapbox = {'style': "stamen-terrain",
               'center': {'lon': 59.55,
                          'lat': 36.25},
-              'zoom': 7},
+              'zoom': 5.5},
     showlegend = False,
     hovermode='closest',
     margin = {'l':0, 'r':0, 'b':0, 't':0},
@@ -50,24 +52,22 @@ base_map.update_layout(
 
 # Update Aquifer Select Dropdown - Sidebar
 @app.callback(Output('aquifer_select_sidebar_tab2', 'options'),
-              Input('uploadButton_wellInfo', 'contents'),
-              State('uploadButton_wellInfo', 'filename'))
-def update_aquifer_select_sidebar_tab2(contents, filename):
-    if contents is None:
+              Input('infoData', 'children'))
+def update_aquifer_select_sidebar_tab2(infoData):
+    if infoData is None or infoData == 'No Data':
         return []
-    data = parse_contents(contents, filename)
+    data = pd.read_json(infoData, orient='split')
     return [{"label": col, "value": col} for col in data['نام آبخوان'].unique()]
 
 
 # Update Well Select Dropdown - Sidebar
 @app.callback(Output('well_select_sidebar_tab2', 'options'),
               Input('aquifer_select_sidebar_tab2', 'value'),
-              Input('uploadButton_wellInfo', 'contents'),
-              State('uploadButton_wellInfo', 'filename'))
-def update_well_select_sidebar_tab2(aquifer, contents, filename):
-    if contents is None or aquifer is None:
+              Input('infoData', 'children'))
+def update_well_select_sidebar_tab2(aquifer, infoData):
+    if infoData == 'No Data' or aquifer is None:
         return []
-    data = parse_contents(contents, filename)
+    data = pd.read_json(infoData, orient='split')
     data = data[data['نام آبخوان'] == aquifer]
     return [{"label": col, "value": col} for col in data['نام چاه'].unique()]
 
@@ -77,12 +77,11 @@ def update_well_select_sidebar_tab2(aquifer, contents, filename):
 @app.callback(Output('mapSidebarTab2', 'figure'),
               Input('aquifer_select_sidebar_tab2', 'value'),
               Input('well_select_sidebar_tab2', 'value'),
-              Input('uploadButton_wellInfo', 'contents'),
-              State('uploadButton_wellInfo', 'filename'))
-def update_mapSidebarTab2(aquifer, wells, contents, filename):
-    if contents is None or wells is None:
+              Input('infoData', 'children'))
+def update_mapSidebarTab2(aquifer, wells, infoData):
+    if infoData == 'No Data' or wells is None:
         return base_map
-    data = parse_contents(contents, filename)
+    data = pd.read_json(infoData, orient='split')
     data['نام آبخوان'] = data['نام آبخوان'].apply(lambda x: x.rstrip())
     data['نام چاه'] = data['نام چاه'].apply(lambda x: x.rstrip())
 
@@ -121,8 +120,8 @@ def update_mapSidebarTab2(aquifer, wells, contents, filename):
 
     fig.update_layout(
         mapbox = {'style': "stamen-terrain",
-                  'center': {'lon': data.X_Decimal.unique().mean(),
-                             'lat': data.Y_Decimal.unique().mean() },
+                  'center': {'lon': data.X_Decimal.mean(),
+                             'lat': data.Y_Decimal.mean() },
                   'zoom': 7},
         showlegend = False,
         hovermode='closest',
@@ -131,77 +130,97 @@ def update_mapSidebarTab2(aquifer, wells, contents, filename):
 
     return fig
 
-################################################################################## Injaaaaa ############
+
+
+# Disabled Boolean Switch
+@app.callback(Output('boolean_switch_sidebar_tab2', 'disabled'),
+              Output('boolean_switch_sidebar_tab2', 'on'),
+              Input('well_select_sidebar_tab2', 'value'))
+def disabled_boolean_switch(wells):
+    if wells is None:
+        return True, False
+    elif len(wells) == 1:
+        return False, False
+    else:
+        return True, False
+
 
 # Update Content 1 - Fig
 @app.callback(Output('content1Tab2', 'figure'),
-              Input('data_storage', 'children'),
+              Input('rawData', 'children'),
               Input('aquifer_select_sidebar_tab2', 'value'),
-              Input('well_select_sidebar_tab2', 'value'))
-def update_content1Tab2(data, aquifer, wells):
-    if data == 'No Data' or aquifer is None or ow is None:
-        return {
-            "layout": {
-                "xaxis": {"visible": False},
-                "yaxis": {"visible": False},
-                "annotations": [{"text": "No matching data found",
-                                 "xref": "paper",
-                                 "yref": "paper",
-                                 "showarrow": False,
-                                 "font": {"size": 28}}],
-                'height': 600,
-                'width': 1000
-            }
-        }
+              Input('well_select_sidebar_tab2', 'value'),
+              Input('boolean_switch_sidebar_tab2', 'disabled'),
+              Input('boolean_switch_sidebar_tab2', 'on'))
+def update_content1Tab2(data, aquifer, wells, switch_disable, switch_on):
+    if data == 'No Data' or aquifer is None or wells is None:
+        return No_Matching_Data_Found_Fig
 
     df = pd.read_json(data, orient='split')
     df = df[df['نام آبخوان'] == aquifer]
-    df = df[df['نام چاه'] == ow]
-    name = aquifer + '-' + ow
+    df = df[df['نام چاه'].isin(wells)]
 
-    # fig = go.Figure()
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
-    fig.add_trace(
-        go.Scatter(
-            x=df['Date_Persian'],
-            y=df['Well_Head'],
-            mode='lines+markers',
-            name="ارتفاع سطح آب ایستابی"
-        ),
-        secondary_y=False
-    )
 
-    fig.add_trace(
-        go.Scatter(
-            x=df['Date_Persian'],
-            y=df['Depth_To_Water'],
-            mode='lines+markers',
-            name="عمق سطح ایستابی"
-
-        ),
-        secondary_y=True
-    )
+    # fig = go.Figure()
+    if len(wells) == 1:
+        df_well = df[df['نام چاه'] == wells[0]]
+        fig.add_trace(
+            go.Scatter(
+                x=df_well['Date_Persian'],
+                y=df_well['Well_Head'],
+                mode='lines+markers',
+                name='ارتفاع سطح آب ایستابی'),
+            secondary_y=False
+        )
+    elif len(wells) > 1:
+        for well in wells:
+            df_well = df[df['نام چاه'] == well]
+            fig.add_trace(
+                go.Scatter(
+                    x=df_well['Date_Persian'],
+                    y=df_well['Well_Head'],
+                    mode='lines+markers',
+                    name=well),
+                secondary_y=False
+            )
 
     fig.update_layout(
-        title=name,
         xaxis_title="تاریخ",
         yaxis_title="",
-        legend_title="Observation Well",
         autosize=False,
-        width=1000,
-        height=600,
-        font=dict(family="B Zar",
-                  size=18,
-                  color="RebeccaPurple"
-                  )
+        font=dict(
+            family="B Koodak",
+            size=16,
+            color="RebeccaPurple"
+        ),
+        xaxis=dict(
+            tickformat="%Y-%m"
+        ),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="left",
+            x=0
+        )
     )
 
-    fig.update_layout(xaxis=dict(tickformat="%Y-%m"))
-
     fig.update_yaxes(title_text="ارتفاع سطح آب ایستابی - متر", secondary_y=False)
-    fig.update_yaxes(title_text=" عمق سطح ایستابی - متر", secondary_y=True)
 
-    fig.update_xaxes(rangeslider_visible=True)
+    if switch_disable is False and switch_on is True:
+        fig.add_trace(
+            go.Scatter(
+                x=df_well['Date_Persian'],
+                y=df_well['Depth_To_Water'],
+                mode='lines+markers',
+                name='عمق سطح ایستابی'
+            ),
+            secondary_y=True
+        )
+
+        fig.update_yaxes(title_text="عمق سطح ایستابی - متر", secondary_y=True)
+        fig.update_xaxes(rangeslider_visible=True)
 
     return fig
