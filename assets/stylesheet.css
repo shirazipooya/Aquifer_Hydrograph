@@ -156,6 +156,17 @@
     padding-left: 5%;
 }
 
+
+.figTab3{
+    border-radius: var(--main-radius);
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    padding-left: 5%;
+}
+
+
+
 .cardTab2{
     border-radius: var(--main-radius)
 }
@@ -165,11 +176,90 @@
     width: 100%;
     height: 270px;
     border-radius: var(--main-radius)
+}
 
+.mapSidebarTab3{
+    padding-left: 15px;
+    width: 100%;
+    height: 270px;
+    border-radius: var(--main-radius)
 }
 
 
 .div_switch{
     font-family: 'B Koodak';
     color: #177199;
+}
+
+
+.containerTab3{
+    display: grid;
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas:
+            "sidebarTab3 content1Tab3";
+    grid-gap: 0.2rem;
+    font-family: sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 12px;
+    /*color: #004d40;*/
+    text-align: center;
+}
+
+.sidebarTab3{
+    grid-area: sidebarTab3;
+    background: #f8f9fa;
+    border-radius: var(--main-radius);
+    padding-top: var(--main-padding);
+}
+
+.content1Tab3{
+    grid-area: content1Tab3;
+    /*background: #000000;*/
+    border-radius: var(--main-radius);
+    border-radius: var(--main-radius);
+}
+
+.sider_sidebar_tab3{
+    padding-left: 15px;
+    padding-right: 30px;
+}
+
+
+.calculate_button_div{
+    text-align: center;
+    padding-left: 15px;
+}
+
+.calculate_button_div .calculate_button{
+    font-family: 'B Koodak';
+    font-size: 14px;
+    text-align: center;
+    width: 200px;
+    color: #000000;
+}
+
+.sider_sidebar_tab3_div{
+    text-align: center;
+    font-family: 'B Koodak';
+    font-size: 10px;
+}
+
+.div_show_delta_select{
+    text-align: center;
+    font-size: 24px;
+}
+
+.card_sidebar_tab1{
+    direction: rtl;
+    text-align: center;
+    font-family: 'B Koodak';
+    font-size: 16px;
+    margin-left: 15px;
+    margin-right: 15px;
 }

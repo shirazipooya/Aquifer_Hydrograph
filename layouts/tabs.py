@@ -24,6 +24,7 @@ tab1 = html.Div(
     ]
 )
 
+
 tab2 = html.Div(
     className='containerTab2',
     children=[
@@ -34,6 +35,21 @@ tab2 = html.Div(
         html.Div(
             className='content1Tab2',
             children=content1Tab2
+        )
+    ]
+)
+
+
+tab3 = html.Div(
+    className='containerTab3',
+    children=[
+        html.Div(
+            className='sidebarTab3',
+            children=sidebarTab3
+        ),
+        html.Div(
+            className='content1Tab3',
+            children=content1Tab3
         )
     ]
 )

@@ -64,3 +64,19 @@ content1Tab2 = [
         className='figTab2'
     )
 ]
+
+# Tab 3 - Sidebar - Map
+mapSidebarTab3 = [
+    dcc.Graph(
+        id='mapSidebarTab3',
+        className='mapSidebarTab3'
+    )
+]
+
+# Tab 3 - Content 1 - Fig
+content1Tab3 = [
+    dcc.Graph(
+        id='content1Tab3',
+        className='figTab3'
+    )
+]
